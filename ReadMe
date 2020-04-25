@@ -1,0 +1,49 @@
+###############################################################################
+Installing kubernetes cluster on one master and multiple nodes through ansible#
+###############################################################################
+
+
+Create a folder called kube-cluster on you ansible server and clone the git repo 
+
+
+
+Create/modify a host file inventory or custom inventory script 
+
+To verify hosts file
+
+# cat ~/kube-cluster/hosts
+
+Commands to verify you custom inventory
+
+# ./inventory.py --list
+
+# ansible all -i inventory.py -m ping
+
+# ansible master_group -i inventory.py -m ping 
+
+# ansible worker_group -i inventory.py -m ping
+
+Run the initial script for adding users and ssh keys
+
+# ansible-playbook -i hosts ~/kube-cluster/initial.yml
+
+Run the dependencies or pre-requisites script on all the nodes
+
+# ansible-playbook -i hosts ~/kube-cluster/kube-dependencies.yml
+
+Run the master playbook to setup the master
+
+# ansible-playbook -i hosts ~/kube-cluster/master.yml 
+
+Run the workers playbook to setup the workers
+
+# ansible-playbook -i hosts ~/kube-cluster/workers.yml
+
+
+
+Note: please modify the ips or hostnames in the host file as per your environment 
+
+
+
+
+

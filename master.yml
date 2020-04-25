@@ -1,0 +1,62 @@
+- hosts: master
+  become: yes
+  tasks:
+#    - name: pull the kubeadm config images
+#      shell: kubeadm config images pull
+
+#    - name: simulate long running op (15 sec), wait for up to 45 sec, poll every 5 sec
+#      command: /bin/sleep 60
+#      async: 60
+#      poll: 5
+
+          
+    - name: initialize the cluster
+      shell: kubeadm init --pod-network-cidr=192.168.153.0/16  --ignore-preflight-errors=all >> cluster_initialized.txt
+      args:
+        chdir: $HOME
+        creates: cluster_initialized.txt
+
+    - name: simulate long running op (15 sec), wait for up to 45 sec, poll every 5 sec
+      command: /bin/sleep 60
+      async: 60
+      poll: 5
+
+
+
+    - name: waiting for kubeadm init mentioning successfull
+      wait_for:
+        path: $HOME/cluster_initialized.txt
+        search_regex: successfully (?Psuccessfully\w+)
+      register: waitfor
+    - debug:
+        msg: Completed {{ waitfor['successfully'] }}
+
+
+    - name: simulate long running op (15 sec), wait for up to 45 sec, poll every 5 sec
+      command: /bin/sleep 60
+      async: 60
+      poll: 5
+
+
+    - name: create .kube directory
+      become: yes
+      become_user: ubuntu
+      file:
+        path: $HOME/.kube
+        state: directory
+        mode: 0755
+
+    - name: copy admin.conf to user's kube config
+      copy:
+        src: /etc/kubernetes/admin.conf
+        dest: /home/ubuntu/.kube/config
+        remote_src: yes
+        owner: ubuntu
+
+    - name: install Pod network
+      become: yes
+      become_user: ubuntu
+      shell: kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/a70459be0084506e4ec919aa1c114638878db11b/Documentation/kube-flannel.yml >> pod_network_setup.txt
+      args:
+        chdir: $HOME
+        creates: pod_network_setup.txt
