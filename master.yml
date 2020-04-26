@@ -1,13 +1,13 @@
 - hosts: master
   become: yes
   tasks:
-#    - name: pull the kubeadm config images
-#      shell: kubeadm config images pull
+    - name: pull the kubeadm config images
+      shell: kubeadm config images pull
 
-#    - name: simulate long running op (15 sec), wait for up to 45 sec, poll every 5 sec
-#      command: /bin/sleep 60
-#      async: 60
-#      poll: 5
+    - name: simulate long running op (15 sec), wait for up to 45 sec, poll every 5 sec
+      command: /bin/sleep 60
+      async: 60
+     poll: 5
 
           
     - name: initialize the cluster
