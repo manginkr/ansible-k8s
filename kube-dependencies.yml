@@ -10,7 +10,7 @@
        state: present
        update_cache: true
 
-   - name: add docker 
+   - name: add cgroup driver config in the docker  
      copy: 
        content: |
                  {
